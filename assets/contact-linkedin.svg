@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="92" height="80" viewBox="0 0 92 80" role="img" aria-label="LinkedIn">
+<title>LinkedIn</title><style>
+.pet{animation:hop 6s 0s ease-in-out infinite}.feet{transform-origin:0 0;animation:kick 6s 0s ease-in-out infinite}
+@keyframes hop{0%,5%,26%,100%{transform:translateY(0)}8%,23%{transform:translateY(1px)}15%{transform:translateY(-9px)}}
+@keyframes kick{0%,8%,24%,100%{transform:rotate(0)}15%{transform:rotate(-12deg)}}
+@media(prefers-reduced-motion:reduce){.pet,.feet{animation:none}}
+</style>
+<g transform="translate(46 38)"><ellipse cy="9" rx="12" ry="1.8" fill="#a796bd" opacity=".35"/><g class="pet"><g class="feet" fill="none" stroke="#947eae" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M-5-1v7h-3M5-1v7h3"/></g><rect x="-11" y="-21" width="22" height="22" rx="4" fill="#0a66c2"/><g fill="white"><circle cx="-5.8" cy="-15.8" r="1.5"/><path d="M-7.2-12.5h2.8v9h-2.8zm4.8 0H.3v1.3c.6-1 1.6-1.6 3-1.6 2.8 0 3.5 1.8 3.5 4.3v5H4v-4.6c0-1.4-.2-2.3-1.6-2.3C1-10.4.4-9.5.4-8v4.5h-2.8z"/></g></g></g>
+<rect x="2" y="54" width="88" height="22" rx="11" fill="#eee8f6" stroke="#c4b3d5"/><text x="46" y="69" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#392e50">LinkedIn ↗</text></svg>

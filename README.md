@@ -4,9 +4,7 @@
 </picture>
 
 <p align="right">
-  <a href="https://www.linkedin.com/in/chanakarn-khongratchatapinyo-a908a441a/">LinkedIn ↗</a>
-  &nbsp;·&nbsp;
-  <a href="mailto:mrmicosz@gmail.com">Gmail ↗</a>
-  &nbsp;·&nbsp;
-  <a href="mailto:chanakarn.kon@dome.tu.ac.th">University Email ↗</a>
+  <a href="https://www.linkedin.com/in/chanakarn-khongratchatapinyo-a908a441a/"><img src="./assets/contact-linkedin.svg" alt="LinkedIn" width="92" height="80"></a>
+  <a href="mailto:mrmicosz@gmail.com"><img src="./assets/contact-gmail.svg" alt="Gmail" width="92" height="80"></a>
+  <a href="mailto:chanakarn.kon@dome.tu.ac.th"><img src="./assets/contact-university.svg" alt="University Email" width="124" height="80"></a>
 </p>
