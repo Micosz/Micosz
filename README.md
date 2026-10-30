@@ -3,8 +3,6 @@
   <img src="./assets/banner-light.png" alt="Hi, I’m Chanakarn, a computer science student at Thammasat University.">
 </picture>
 
-I’m looking for an internship where I can build software with a team.
-
 ## Projects
 
 <table>
