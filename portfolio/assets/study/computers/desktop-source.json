@@ -1,0 +1,39 @@
+{
+  "Title": "Monitor",
+  "Description": "#computer #desktop",
+  "UploadDate": "2017-10-23T00:14:19.593Z",
+  "ResourceID": "004c6647-34bb-4f64-9bce-c7af817090b3",
+  "PublicID": "0twMVGXRVDl",
+  "Likes": 1,
+  "CommentCount": 0,
+  "Tris": 316,
+  "Views": 792,
+  "Downloads": 89,
+  "Creator": {
+    "Username": "Poly by Google",
+    "DPURL": "https://static.poly.pizza/dp%2Fpolygoogle.jpg",
+    "Socials": {}
+  },
+  "Category": "Objects",
+  "Tags": [
+    "computer",
+    "desktop",
+    "imac"
+  ],
+  "Orbit": {
+    "phi": "1.47781",
+    "radius": "29.258206352283803",
+    "theta": "3.31603"
+  },
+  "Background": {
+    "one": "#8e24aa",
+    "two": "hsl(287deg, 65%, 15%)",
+    "type": "Radial"
+  },
+  "Visibility": "Public",
+  "Type": "obj",
+  "Licence": "CC-BY 3.0",
+  "Animated": false,
+  "source": "https://poly.pizza/m/0twMVGXRVDl",
+  "file": "desktop.glb"
+}

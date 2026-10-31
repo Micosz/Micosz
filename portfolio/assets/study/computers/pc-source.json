@@ -1,0 +1,38 @@
+{
+  "Title": "Computer",
+  "Description": "#desktop #pc",
+  "UploadDate": "2017-10-23T06:12:18.901Z",
+  "ResourceID": "4fd289d6-e578-4466-863c-8f6f3a5e6a9d",
+  "PublicID": "2EHvZLax4Y3",
+  "Likes": 34,
+  "CommentCount": 2,
+  "Tris": 2360,
+  "Views": "7.64k",
+  "Downloads": "4.85k",
+  "Creator": {
+    "Username": "Poly by Google",
+    "DPURL": "https://static.poly.pizza/dp%2Fpolygoogle.jpg",
+    "Socials": {}
+  },
+  "Category": "Other",
+  "Tags": [
+    "desktop",
+    "pc"
+  ],
+  "Orbit": {
+    "phi": "1.35331",
+    "radius": "1127.0813786877432",
+    "theta": "0.25045"
+  },
+  "Background": {
+    "one": "#1e88e5",
+    "two": "hsl(208deg, 79%, 15%)",
+    "type": "Radial"
+  },
+  "Visibility": "Public",
+  "Type": "obj",
+  "Licence": "CC-BY 3.0",
+  "Animated": false,
+  "source": "https://poly.pizza/m/2EHvZLax4Y3",
+  "file": "pc.glb"
+}

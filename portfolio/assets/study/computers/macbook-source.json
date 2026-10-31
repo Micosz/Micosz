@@ -1,0 +1,44 @@
+{
+  "Title": "Laptop / MacBook Pro",
+  "Description": "A low poly laptop MacBook Pro #MadeWithBlocks\n\n#macbook #laptop #computer #mouse #monitor #keyboard",
+  "UploadDate": "2019-07-23T21:03:38.593Z",
+  "ResourceID": "7528df1c-c611-4e42-9210-eba9fcaf4269",
+  "PublicID": "27hcX_w47Jb",
+  "Likes": 8,
+  "CommentCount": 0,
+  "Tris": 1412,
+  "Views": "2.35k",
+  "Downloads": "3.88k",
+  "Creator": {
+    "Username": "Alex Safayan",
+    "DPURL": "https://static.poly.pizza/dp%2F55dfbeaa-2c18-46f8-a2d8-cf10386c16e8.jpg",
+    "Socials": {
+      "Twitter": "alexsafayan",
+      "Instagram": "newpxl",
+      "Website": "http://alexsafayan.com",
+      "Youtube": "newpxl"
+    }
+  },
+  "Category": "Other",
+  "Tags": [
+    "air",
+    "acer",
+    "case"
+  ],
+  "Orbit": {
+    "phi": "1.20627",
+    "radius": "4.88",
+    "theta": "6.89053"
+  },
+  "Background": {
+    "one": "#8e24aa",
+    "two": "hsl(287deg, 65%, 15%)",
+    "type": "Radial"
+  },
+  "Visibility": "Public",
+  "Type": "obj",
+  "Licence": "CC-BY 3.0",
+  "Animated": false,
+  "source": "https://poly.pizza/m/27hcX_w47Jb",
+  "file": "macbook.glb"
+}
