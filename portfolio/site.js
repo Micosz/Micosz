@@ -1,5 +1,9 @@
 const sections={projects:'Work',about:'About me',achievements:'Achievements',events:'Events',contact:'Contact'};
 const data=getContent(),main=document.querySelector('main'),menu=document.querySelector('.menu');
+document.querySelector('.skip').addEventListener('click', event => {
+  event.preventDefault();
+  main.focus();
+});
 let stop=()=>{};document.querySelector('#brand').textContent=data.name;document.querySelector('#foot').textContent=data.name+' ↗';
 document.querySelector('#nav').innerHTML=Object.entries(sections).map(([k,v])=>`<a href="#${k}">${v}</a>`).join('');
 menu.onclick=()=>menu.setAttribute('aria-expanded',String(menu.getAttribute('aria-expanded')==='false'));
@@ -8,6 +12,27 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.getAtt
 function itemMeta(key,item){return key==='events' ? [item.date,item.place].filter(Boolean).join(' · ') : item.category;}
 function rows(key,limit=Infinity){return data[key].slice(0,limit).map((p,i)=>`<a class="row" data-index="${i}" href="#${key}/${i}"><small>${String(i+1).padStart(2,'0')}</small><strong>${esc(p.name)}</strong><small>${esc(itemMeta(key,p))}</small><i>↗</i></a>`).join('')||'<p class="empty">No entries yet.</p>';}
 function link(label,url){const dest=webLink(url);return dest?`<a class="under" href="${dest}">${label} ↗</a>`:'';}
+function credentialLink(item) {
+ const url = webLink(item.link);
+ return url.startsWith('https://www.credly.com/badges/') ? url : '';
+}
+function achievementCards(items) {
+ if (!items.length) return '<p class="empty">No entries yet.</p>';
+ const cards = items.map((item, index) => {
+   const credential = credentialLink(item);
+   const image = imageSrc(item.image);
+   return `<li><a class="achievement-card" href="${credential || '#achievements/' + index}">
+     ${image ? `<img src="${image}" alt="" width="148" height="148">` : ''}
+     <div class="achievement-info">
+       <p class="achievement-category">${esc(item.category)}</p>
+       <h2>${esc(item.name)}</h2>
+       ${item.date ? `<p class="achievement-date">${credential ? 'Issued ' : ''}${esc(item.date)}</p>` : ''}
+     </div>
+     <span class="achievement-action">${credential ? 'View on Credly ↗' : 'View details →'}</span>
+   </a></li>`;
+ });
+ return `<ul class="achievement-grid">${cards.join('')}</ul>`;
+}
 function contact(){
  const contacts=[
   {label:'GitHub',icon:'github',url:webLink(data.github)},
@@ -22,7 +47,7 @@ function contact(){
 function chapterBody(key){
  if(key==='events' && !data.events.length)return '<p class="empty">No events added yet.</p>';
  if(key==='projects')return workScene(data.projects)||rows(key);
- if(key==='achievements')return '<div class="award-index">'+archiveSeal()+'<div>'+rows(key)+'</div></div>';
+ if(key==='achievements')return achievementCards(data.achievements);
  return rows(key);
 }
 function introSection(key,index,label,headline,description,cta){
@@ -47,7 +72,9 @@ function render(){
    const pic=imageSrc(record.image);
    const visual=pic ? `<img class="cover" src="${pic}" alt="${esc(record.name)}">`
      : key==='projects' ? `<figure class="detail-plate"><div class="plate-layer" data-tone="${Number(id)%4}" data-active="true">${projectPlate(record,Number(id))}</div></figure>` : '';
-   body=`<div class="cap">${esc(itemMeta(key,record))}</div><h1>${esc(record.name)}</h1><p class="lead">${esc(record.description)}</p>${visual}<p class="prose">${esc(record.detail)}</p>${link(key==='events'?'Event link':'Open project or source',record.link)}`;
+   const meta=[itemMeta(key,record),key==='achievements' && record.date].filter(Boolean).join(' · ');
+   const linkLabel=key==='events'?'Event link':credentialLink(record)?'View on Credly':'View source';
+   body=`<div class="cap">${esc(meta)}</div><h1>${esc(record.name)}</h1><p class="lead">${esc(record.description)}</p>${visual}${record.detail?`<p class="prose">${esc(record.detail)}</p>`:''}${link(linkLabel,record.link)}`;
   }
   else if(key==='contact'){body='<h1>Get in touch.</h1>'+contact();}
   else {body=`<h1>${name}.</h1><div class="entries">${chapterBody(key)}</div>`;}
@@ -56,8 +83,8 @@ function render(){
  document.title=(record?.name||name||'Personal archive')+' — '+data.name;
  document.querySelectorAll('#nav a').forEach(a=>a.toggleAttribute('aria-current',a.hash==='#'+key));
  window.scrollTo(0,0);
- const stopMotion=startScrollMotion(main),stopAbout=startAbout(main);
- stop=()=>{stopAbout();stopMotion();};
+ const stopMotion=startScrollMotion(main),stopAbout=startAbout(main),stopStudies=startWorkStudies(main);
+ stop=()=>{stopStudies();stopAbout();stopMotion();};
 }
 const formatter=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',timeStyle:'medium'});
 function clock(){const el=main.querySelector('time');if(el)el.textContent=formatter.format(new Date());}

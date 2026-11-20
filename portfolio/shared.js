@@ -3,6 +3,14 @@ const DRAFT = 'chanakarn-archive-draft-v1';
 function getContent() {
   try {const saved = JSON.parse(localStorage.getItem(DRAFT)); if(saved && typeof saved === 'object') {
     const data={...window.PORTFOLIO,...saved};
+    // Drafts saved before the first badges shipped contain the old, empty catalogue.
+    if (saved.achievementsCatalogVersion == null && Array.isArray(saved.achievements)) {
+      const newEntries = window.PORTFOLIO.achievements.filter(entry =>
+        !saved.achievements.some(item => (entry.id && item?.id === entry.id) ||
+          (entry.link && item?.link === entry.link))
+      );
+      data.achievements = saved.achievements.concat(newEntries);
+    }
     if(saved.title==='Ideas in\nmotion.') data.title=window.PORTFOLIO.title;
     if(saved.eventsHeadline==='Learning beyond the classroom.') data.eventsHeadline=window.PORTFOLIO.eventsHeadline;
     if(saved.headline==='A personal archive, still taking shape.') data.headline=window.PORTFOLIO.headline;

@@ -194,30 +194,29 @@ window.PORTFOLIO = {
       "category": "Algorithms / Research tooling",
       "context": "Course research workbench",
       "description": "A browser-based workbench for comparing four approaches to course timetabling.",
-      "detail": "The workbench explores weekly laboratory requirements with Greedy, random-restart Hill Climbing, Simulated Annealing and a Genetic Algorithm. Python runs in a browser worker through Pyodide, alongside a native command-line runner.",
+      "detail": "The project compares Greedy, Hill Climbing, Simulated Annealing and a Genetic Algorithm. Each class keeps its time slot, while its room can change on weeks when it needs a computer lab. The current C# engine runs the experiments, and the browser displays the results.",
       "notes": "All four methods use a shared representation, decoder and objective. An independent validator checks the resulting timetable against the constraints, while the UI records individual runs, traces, weekly schedules and unresolved sessions.",
       "features": [
         "Four search methods with shared evaluation rules",
         "Independent input and solution validation",
         "Run budgets, seeds and repeated experiments",
         "Weekly schedule and best-so-far plots",
-        "IndexedDB history and CSV/JSON export; Custom Python algorithm support"
+        "Weekly and fixed-room comparisons"
       ],
       "stack": [
         "Python",
         "JavaScript",
-        "Pyodide",
-        "Web Workers",
-        "IndexedDB"
+        "C#",
+        ".NET"
       ],
       "contribution": "",
       "status": "An experimental workbench using adapted benchmark data and synthetic weekly-lab requirements.",
-      "link": "https://github.com/Micosz/course-timetabling-lab",
+      "link": "https://github.com/Micosz/CS373_CourseTimetablingLab",
       "image": "",
       "links": [
         {
           "label": "Open app",
-          "url": "https://micosz.github.io/course-timetabling-lab/"
+          "url": "https://micosz.github.io/CS373_CourseTimetablingLab/"
         }
       ]
     },
@@ -385,7 +384,36 @@ window.PORTFOLIO = {
       "image": ""
     }
   ],
-  "achievements": [],
+  "achievementsCatalogVersion": 1,
+  "achievements": [
+    {
+      "id": "aws-academy-cloud-architecting",
+      "name": "Cloud Architecting",
+      "category": "AWS Academy · Training Badge",
+      "date": "1 Nov 2026",
+      "description": "Completed the AWS Academy Cloud Architecting course.",
+      "link": "https://www.credly.com/badges/489ac370-6e96-4304-b1a0-bc55c29e1c72/public_url",
+      "image": "assets/badges/cloud-architecting.png"
+    },
+    {
+      "id": "aws-academy-cloud-web-application-builder",
+      "name": "Cloud Web Application Builder",
+      "category": "AWS Academy · Training Badge",
+      "date": "24 Oct 2026",
+      "description": "Completed the AWS Academy Cloud Web Application Builder lab project.",
+      "link": "https://www.credly.com/badges/f0c743dd-dd41-44ea-a90e-1b5945bc0d4c/public_url",
+      "image": "assets/badges/cloud-web-application-builder.png"
+    },
+    {
+      "id": "aws-academy-cloud-foundations",
+      "name": "Cloud Foundations",
+      "category": "AWS Academy · Training Badge",
+      "date": "6 May 2026",
+      "description": "Completed the AWS Academy Cloud Foundations course.",
+      "link": "https://www.credly.com/badges/255e9b19-7929-4d18-838e-7a5fd5b95299/public_url",
+      "image": "assets/badges/cloud-foundations.png"
+    }
+  ],
   "events": [],
   "workCatalogVersion": "2026-10-31-reviewed-11",
   "workArchiveTitle": "Projects, coursework,\nand things I’ve built.",
