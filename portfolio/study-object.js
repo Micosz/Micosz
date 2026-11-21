@@ -1,22 +1,38 @@
 import * as THREE from './assets/vendor/three/three.module.js';
+import {dressStudyHardware} from './study-hardware.js';
 import {GLTFLoader} from './assets/vendor/three/GLTFLoader.js';
 
 // One renderer, four real GLB assets. Only the outgoing/incoming eras are drawn.
 export async function createStudyObject(host,definitions){
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});
  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setClearColor(0x000000,0);
- renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(34,1,.1,50);
- camera.position.set(0,.1,5.7);camera.lookAt(0,0,0);
+ camera.position.set(0,.1,6.0);camera.lookAt(0,0,0);
  scene.add(new THREE.HemisphereLight(0xe7e1ff,0x363044,2));
  const key=new THREE.DirectionalLight(0xfff1df,2.6);key.position.set(-3,5,5);scene.add(key);
- const rim=new THREE.DirectionalLight(0xb49aff,2);rim.position.set(4,2,-3);scene.add(rim);
+ const rim=new THREE.DirectionalLight(0xb8a7dc,1.3);rim.position.set(4,2,-3);scene.add(rim);
  const fill=new THREE.DirectionalLight(0xd2e3ff,1);fill.position.set(2,0,4);scene.add(fill);
- let disposed=false,lastPose={fromEra:0,toEra:0,mix:0,x:.10,y:-.38,z:-.025,scale:1};
- const loader=new GLTFLoader(),result=await Promise.allSettled(definitions.map(d=>loader.loadAsync(new URL('./assets/study/computers/'+d.file,import.meta.url).href)));
- const loaded=result.filter(r=>r.status==='fulfilled').map(r=>r.value.scene);
- function freeModels(){const textures=new Set(),materials=new Set();loaded.forEach(model=>model.traverse(o=>{o.geometry?.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{materials.add(m);Object.values(m).forEach(v=>{if(v?.isTexture)textures.add(v);});});}));textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());}
- if(result.some(r=>r.status==='rejected')){freeModels();renderer.dispose();renderer.forceContextLoss();throw new Error('Computer model unavailable');}
+ let disposed=false,lastPose={fromEra:0,toEra:0,mix:0,x:.22,y:-.49,z:-.022,scale:1};
+ const loader=new GLTFLoader(),managed=new Set();
+ const dressed=await Promise.allSettled(definitions.map(async definition=>{
+  const url=new URL('./assets/study/computers/'+definition.file,import.meta.url);
+  const {scene:source}=await loader.loadAsync(url.href);managed.add(source);
+  const model=await dressStudyHardware(definition,source);managed.add(model);return model;
+ }));
+ function freeModels(){
+  const geometries=new Set(),materials=new Set(),textures=new Set();
+  managed.forEach(model=>model.traverse(o=>{
+   if(o.geometry)geometries.add(o.geometry);
+   if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));
+  }));
+  materials.forEach(m=>{Object.values(m).forEach(v=>{if(v?.isTexture)textures.add(v);});m.dispose();});
+  textures.forEach(t=>t.dispose());geometries.forEach(g=>g.dispose());
+ }
+ if(dressed.some(r=>r.status==='rejected')){
+  freeModels();renderer.dispose();renderer.forceContextLoss();throw new Error('Computer model unavailable');
+ }
+ const loaded=dressed.map(r=>r.value);
  const models=loaded.map((model,i)=>{
   const pivot=new THREE.Group(),basis=new THREE.Group(),bounds=new THREE.Box3().setFromObject(model),center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3()),normal=definitions[i].size/Math.max(size.x,size.y,size.z);
   model.position.copy(center).multiplyScalar(-normal);model.scale.setScalar(normal);basis.rotation.y=definitions[i].yaw;basis.add(model);pivot.add(basis);scene.add(pivot);
@@ -53,7 +69,9 @@ export async function createStudyObject(host,definitions){
    renderer.setRenderTarget(null);blendMaterial.uniforms.amount.value=p.mix;renderer.render(blendScene,blendCamera);
   }else renderer.render(scene,camera);
  }
- function resize(){if(disposed)return;const r=host.getBoundingClientRect(),height=Math.max(1,r.height-28);renderer.setSize(r.width,height,false);camera.aspect=r.width/height;camera.updateProjectionMatrix();const size=renderer.getDrawingBufferSize(new THREE.Vector2());targets.forEach(t=>t.setSize(size.x,size.y));update(lastPose);}
+ function resize(){if(disposed)return;const r=host.getBoundingClientRect(),height=Math.max(1,r.height-28);renderer.setSize(r.width,height,false);camera.aspect=r.width/height;
+  const baseHalfFov=THREE.MathUtils.degToRad(17);
+  camera.fov=THREE.MathUtils.radToDeg(2*Math.atan(Math.tan(baseHalfFov)/Math.min(1,camera.aspect)));camera.updateProjectionMatrix();const size=renderer.getDrawingBufferSize(new THREE.Vector2());targets.forEach(t=>t.setSize(size.x,size.y));update(lastPose);}
  function lost(event){event.preventDefault();host.dataset.modelState='fallback';host.querySelector('.study-object-note').textContent='Static view';host.removeAttribute('tabindex');const controls=host.closest('.study-stage')?.querySelector('.study-object-controls');if(controls)controls.hidden=true;}
  canvas.addEventListener('webglcontextlost',lost);resize();
  return {update,resize,dispose(){if(disposed)return;disposed=true;canvas.removeEventListener('webglcontextlost',lost);freeModels();targets.forEach(t=>t.dispose());blendPlane.geometry.dispose();blendMaterial.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}};

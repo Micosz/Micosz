@@ -13,7 +13,7 @@ function studyJourneyMarkup(terms){
  </article>`).join('')}</div>
  <div class="study-stage-rail"><span class="study-stage-hint">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span><div class="study-object-controls" aria-label="Computer controls"><button type="button" data-turn="-1" aria-label="Rotate computer left"><img src="assets/study/rotate-left.svg" alt="" width="18" height="18"></button><button type="button" data-reset-object>Reset</button><button type="button" data-turn="1" aria-label="Rotate computer right"><img src="assets/study/rotate-right.svg" alt="" width="18" height="18"></button></div></div>
  <nav class="study-stage-nav" aria-label="Choose a semester">${terms.map((t,i)=>`<button type="button" data-jump="${i}" aria-label="${esc(studyTermLabel(t))}"${i===0?' aria-current="step"':''}><span class="study-step-no">${String(i+1).padStart(2,'0')}</span><span class="study-step-label">${esc(t.year)} <span>/ ${t.term==='Summer'?'Summer':esc(t.term.slice(-1))}</span></span><span class="study-step-track" aria-hidden="true"><span></span></span></button>`).join('')}</nav>
- </div></section><details class="study-computer-credits"><summary>3D model credits</summary><p>Computers through time, accompanying the university journey.</p><ul>${STUDY_COMPUTERS.map(c=>`<li><a href="${c.source}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a> by ${esc(c.creator)}</li>`).join('')}</ul><p>Models shared under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. Scale, lighting and materials adapted for this scene.</p></details>`;
+ </div></section><details class="study-computer-credits"><summary>3D model credits</summary><p>Computers through time, accompanying the university journey.</p><ul>${STUDY_COMPUTERS.map(c=>`<li><a href="${c.source}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a> by ${esc(c.creator)}</li>`).join('')}</ul><p>Models shared under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. The CRT case, keyboard, peripherals and screen artwork were created for this portfolio. The CRT swivel base and the later computers use the credited models.</p></details>`;
 }
 
 function startStudyJourney(page){
@@ -21,7 +21,7 @@ function startStudyJourney(page){
  const reduced=matchMedia('(prefers-reduced-motion:reduce)'),shortScreen=matchMedia('(max-height:560px)'),events=new AbortController(),opt={signal:events.signal};
  const manualMode=()=>reduced.matches||shortScreen.matches;
  const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),ease=x=>x*x*(3-2*x),lerp=(a,b,t)=>a+(b-a)*t;
- const poses=[[.10,-.38,-.025,1],[.12,.38,.025,1.04],[.10,-.36,-.035,1],[.15,.36,.025,1.04],[.09,-.32,-.025,1],[.12,.32,.025,1.05],[.20,-.40,-.04,1.02]];
+ const poses=[[.22,-.49,-.022,1],[.24,.46,.018,1.02],[.10,-.36,-.035,1],[.15,.36,.025,1.04],[.09,-.32,-.025,1],[.12,.32,.025,1.05],[.20,-.40,-.04,1.02]];
  let disposed=false,frame=0,position=0,target=0,active=-1,model=null,loading=false,visible=false,turn=0,tilt=0,manual=0,headerHeight=70;
  let pointer=null,lastTime=0;
  const turns=root.querySelector('.study-object-controls');
@@ -74,7 +74,7 @@ function startStudyJourney(page){
  async function load(){
   if(loading||disposed)return;loading=true;
   try{
-   const {createStudyObject}=await import('./study-object.js?v=20261031-computer-eras-final');if(disposed)return;
+   const {createStudyObject}=await import('./study-object.js?v=20261121-hardware');if(disposed)return;
    const result=await createStudyObject(object,STUDY_COMPUTERS);if(disposed){result.dispose();return;}model=result;object.dataset.modelState='ready';object.querySelector('.study-object-note').textContent='';schedule();
   }catch(error){if(disposed)return;object.dataset.modelState='fallback';object.querySelector('.study-object-note').textContent='Static view · scroll to explore';object.removeAttribute('tabindex');turns.hidden=true;}
  }

@@ -18,14 +18,15 @@ The user requested an old-to-modern computer sequence, ending in a MacBook. Four
 
 All four original source pages list **CC BY 3.0**: https://creativecommons.org/licenses/by/3.0/ . Public attribution is shown under **3D model credits** in the About page. Original metadata and full per-model credits are retained in `assets/study/computers/`.
 
-Geometry is unchanged. Scale and orientation are normalized; lighting and transitions are adapted to the portfolio. Model downloads total 368,800 bytes. The local fallback PNGs are transparent renders of these exact models, not screenshots of the source website.
+The local GLB source files total 368,800 bytes. The CRT combines the original swivel base with a rounded case, curved display, keyboard, cables and mouse modeled for the portfolio. The desktop PC gains a detailed front panel. All four computers have original screen artwork and a transparent fallback render of the finished model.
 
 The eras are a visual progression. They do not assert computer release dates matching academic years or ownership of those devices. Academic records and captions remain sourced as documented in `ABOUT-SOURCES.md`.
 
 ## Implementation
 
 - `study-computers.js`: source catalogue, normalization and term-to-era mapping.
-- `study-object.js`: GLB loading, a shared Three.js renderer, lighting, whole-object crossfades and cleanup.
+- `study-object.js`: GLB and texture loading, a shared Three.js renderer, lighting, whole-object crossfades and cleanup.
+- `study-hardware.js`: modeled case parts, CRT glass, peripherals and screen placement.
 - `study-journey.js`: chapter state, scroll-controlled rotation/scale, keyboard and pointer controls.
 - `study-journey.css`: scoped stage, responsive layout, object captions and attribution disclosure.
 - `content.js` → `education.terms`: all academic text, dates and records, also editable in Edit portfolio.

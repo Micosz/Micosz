@@ -2,27 +2,25 @@
 @media(max-width:760px){.archive{display:none}.menu{display:block;background:transparent;border:1px solid var(--line);color:inherit;padding:5px 13px}.menu+nav{display:none}.menu[aria-expanded=true]+nav{display:flex;position:absolute;top:100%;left:0;right:0;padding:18px var(--pad);background:#16141a;border-bottom:1px solid var(--line)}.hero-grid{grid-template-columns:1fr;padding:40px 0 25px;gap:12px}.hero-copy p{margin:17px 0}.row{grid-template-columns:2em 1fr 1em}.row small:nth-of-type(2){display:none}footer span{display:none}}
 .editor{max-width:920px;margin:auto}.editor h1{font-size:48px;margin:25px 0;line-height:1.35}.editor p{color:var(--muted)}.editor select,.editor button,.editor input,.editor textarea{background:#201d26;color:var(--fg);border:1px solid #514b59;border-radius:4px;padding:9px 12px}.editor select,.editor fieldset,.tools{margin:20px 0}.editor label{display:grid;gap:4px;margin:12px 0;font-size:14px}.editor textarea{min-height:75px}.editor fieldset{border:1px solid var(--line)}.tools{display:flex;gap:10px;flex-wrap:wrap}.editor .save{background:var(--accent);color:#19151d}.editor input,.editor textarea{width:100%}
 
-/* Native sticky scene on roomy screens; shorter continuous travel on phones. */
-.hero{--hero-progress:0}.scene-meter{height:2px;background:var(--line);overflow:hidden}
-.scene-meter i{display:block;height:100%;background:var(--accent);transform-origin:left;transform:scaleX(var(--hero-progress))}
+/* The opening scene occupies one section in the normal page flow. */
+.hero-stage { border-bottom:1px solid var(--line); }
+.orbit canvas:active { cursor:grabbing; }
+.orbit figcaption { align-items:center; gap:8px 14px; flex-wrap:wrap; }
+@media (max-width:480px) { .orbit-number { display:none; } }
+.orbit-controls { display:inline-flex; align-items:center; gap:14px; }
+.orbit-toggle { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:62px; min-height:32px; padding:3px 9px; border:1px solid var(--line); border-radius:4px; color:var(--fg); background:transparent; font:inherit; }
+@media (pointer:coarse) { .orbit-toggle { min-height:44px; } }
+.orbit-toggle:hover { color:var(--accent); border-color:var(--accent); }
+.orbit-toggle[hidden] { display:none; }
+.orbit-toggle::before { content:""; width:7px; height:8px; border-inline:2px solid currentColor; box-sizing:border-box; }
+.orbit-toggle[data-playing="false"]::before { width:0; height:0; border:0; border-left:7px solid currentColor; border-block:4px solid transparent; }
 @media(prefers-reduced-motion:no-preference){
-  .motion .hero-copy h1{transform:translateY(calc(-35px * var(--hero-progress)));opacity:calc(1 - .38 * var(--hero-progress))}
-  .motion .hero-copy p{transform:translateY(calc(-13px * var(--hero-progress)))}
-  .motion .hero figure{transform:translateY(calc(-12px * var(--hero-progress)))}
   .motion .paper>h2,.motion .section-head,.motion .block>.cap,.motion .interior>h1,.motion .block>h2,.motion .paper>p{
     transform:translateY(calc(38px * (1 - var(--entry,1))));opacity:calc(.18 + .82 * var(--entry,1))}
   .motion .row{transform:translateX(calc(-24px * (1 - var(--entry,1))));opacity:calc(.32 + .68 * var(--entry,1))}
   .motion .row:nth-of-type(even){transform:translateX(calc(-40px * (1 - var(--entry,1))))}
   .motion .block:focus-within,.motion .paper:focus-within{--entry:1!important}
 }
-@media(min-width:761px) and (min-height:600px) and (prefers-reduced-motion:no-preference){
-  .motion .hero-stage{position:sticky;top:66px}
-  /* The scroll runway belongs to the container, not its padding: the sticky
-     child travels inside the content box. */
-  .motion .hero::after{content:"";display:block;height:65vh}
-}
-@media(prefers-reduced-motion:reduce){.scene-meter{display:none}}
-
 /* The curtain is outside the routed content so back/forward navigation shares the cue. */
 .curtain{position:fixed;inset:0;z-index:8;transform:translateY(100%);display:grid;align-content:end;padding:6vw;background:#bf9bf4;color:#211528;pointer-events:none}
 .curtain span{font:500 clamp(32px,8vw,128px)/1 system-ui;letter-spacing:-.065em}

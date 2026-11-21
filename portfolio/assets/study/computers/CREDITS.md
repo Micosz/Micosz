@@ -1,7 +1,7 @@
 # 3D computer credits
 
 All four models are used under Creative Commons Attribution 3.0: https://creativecommons.org/licenses/by/3.0/ .
-Original geometry is retained. Normalized scale, orientation, lighting and transition opacity are changed at runtime. PNG fallback posters are renders of the same models.
+The GLB files contain the original source models. The portfolio uses the swivel base from Simple computer with a new CRT case, keyboard and peripherals. The Desktop PC has additional case details. All four screens use original artwork. The PNG fallback posters show these adaptations.
 
 ## Simple computer
 

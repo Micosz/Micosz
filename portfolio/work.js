@@ -83,7 +83,7 @@ function workLinks(project, interactive=true){
         return `<a href="${url}">${privateRepo ? 'Private GitHub repository' : 'GitHub repository'} ↗</a>`;
       }
       const label=`Open ${project.name}${privateRepo?' private repository':''} on GitHub (new tab)`;
-      return `<a class="work-repo-pet" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}"><img src="/assets/contact/github-work.svg" alt="" width="138" height="120">${privateRepo?'<span class="work-repo-access">Private repository</span>':''}</a>`;
+      return `<a class="work-repo-pet" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}"><img src="/assets/contact/github.svg" alt="" width="138" height="120">${privateRepo?'<span class="work-repo-access">Private repository</span>':''}</a>`;
     }
     return `<a href="${url}" target="_blank" rel="noopener noreferrer">${esc(item.label||'Source')} <span aria-hidden="true">↗</span></a>`;
   }).join('');

@@ -3,14 +3,13 @@ function startScrollMotion(main) {
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
   const header = document.querySelector('header');
-  const hero = main.querySelector('.hero');
-  const stage = main.querySelector('.hero-stage');
-  const renderArt = hero && startArt(hero.querySelector('canvas'));
   const chapters = [...main.querySelectorAll('.paper,.block')];
   const workMotion = prepareWorkScroll(main);
   const clamp = n => Math.max(0,Math.min(1,n));
   const events = new AbortController();
   const options = {signal:events.signal};
+  const orbit = main.querySelector('.hero figure');
+  if (orbit) startArt(orbit, events.signal);
   const cross = document.querySelector('.pointer-mark');
   let pending = 0;
 
@@ -67,11 +66,11 @@ function startScrollMotion(main) {
   }
   function movePointer(event){
     if(!finePointer.matches||preference.matches)return;
-    const interactive=event.target.closest('.row,.hero figure,.under,.primary');
+    const interactive=event.target.closest('.row,.under,.primary');
     cross.classList.toggle('active',Boolean(interactive));
     if(!interactive)return;
     cross.style.transform='translate('+Math.round(event.clientX+16)+'px,'+Math.round(event.clientY+16)+'px)';
-    cross.textContent=interactive.matches('figure')?'TURN':'↗';
+    cross.textContent='↗';
   }
   main.addEventListener('pointermove',movePointer,options);
   main.addEventListener('pointerleave',()=>cross.classList.remove('active'),options);
@@ -89,13 +88,6 @@ function startScrollMotion(main) {
     const height=innerHeight, reduced=preference.matches;
     const rects=chapters.map(el=>el.getBoundingClientRect());
     const workFrame=workMotion?.read(height,reduced);
-    if(hero){
-      const rect=hero.getBoundingClientRect();
-      const distance=Math.max(rect.height-stage.offsetHeight,height*.48);
-      const progress=reduced?0:clamp((header.offsetHeight-rect.top)/distance);
-      hero.style.setProperty('--hero-progress',progress.toFixed(4));
-      if(rect.bottom>=0 && rect.top<=height)renderArt(progress);
-    }
     chapters.forEach((el,i)=>{
       const {top,height:h}=rects[i];
       const entry=reduced?1:clamp((height-top)/Math.min(height*.42,h));
@@ -112,7 +104,7 @@ function startScrollMotion(main) {
     syncWorkPreview(height);
     const range=document.documentElement.scrollHeight-height;
     header.style.setProperty('--page-progress',range>0?clamp(scrollY/range):1);
-    workMotion?.paint(workFrame,range>0?clamp(scrollY/range):1);
+    workMotion?.paint(workFrame);
   }
   function schedule(){if(!pending)pending=requestAnimationFrame(paint);}
   function resize(){workMotion?.invalidate();schedule();}
@@ -175,8 +167,7 @@ function prepareWorkScroll(main){
         })
       };
     },
-    paint(frame,progress){
-      page.style.setProperty('--work-page-progress',progress.toFixed(4));
+    paint(frame){
       head?.style.setProperty('--head-travel',frame.head.toFixed(4));
       for(const {row,active,read,pieces} of frame.rows){
         row.entry.style.setProperty('--work-read',read.toFixed(4));

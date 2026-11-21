@@ -1,29 +1,124 @@
-// A rotating, folded ribbon made of points. Drag to turn the sculpture.
-function startArt(canvas) {
-  const ctx=canvas.getContext('2d'); if(!ctx)return ()=>{};
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  let drag=null, yaw=.45, progress=0;
-  canvas.onpointerdown=e=>{drag=e.clientX;canvas.setPointerCapture(e.pointerId)};
-  canvas.onpointermove=e=>{if(drag!==null){yaw+=(e.clientX-drag)*.008;drag=e.clientX;draw(progress);}};
-  canvas.onpointerup=canvas.onpointercancel=()=>drag=null;
-  const points=[];
-  for(let a=0;a<170;a++)for(let b=0;b<27;b++){
-    const u=a*Math.PI*2/170,v=b*Math.PI*2/27,t=.36*Math.cos(v)+1.02;
-    points.push([t*Math.cos(u),t*Math.sin(u),.36*Math.sin(v)+.53*Math.sin(3*u),a,b]);
+// Orbit Study turns in its own time. Holding the ribbon gives the pointer control.
+function startArt(figure, signal) {
+  const canvas = figure.querySelector('canvas');
+  const toggle = figure.querySelector('.orbit-toggle');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    toggle.hidden = true;
+    canvas.removeAttribute('tabindex');
+    return;
   }
-  function draw(value){
-    progress=value;
-    const w=canvas.clientWidth,h=canvas.clientHeight,d=Math.min(devicePixelRatio,2);
-    if(canvas.width!==Math.round(w*d)||canvas.height!==Math.round(h*d)){canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);}
-    ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);
-    const phase=reduced.matches?0:progress;
-    const angle=yaw+phase*Math.PI*1.32;
-    const scale=Math.min(w*.30,h*.36)*(1+.33*phase),ca=Math.cos(angle),sa=Math.sin(angle);
-    for(const [x,y,z,a,b] of points){
-      const X=x*ca-y*sa,Y=x*sa+y*ca,Z=.80*Y+.60*z;
-      const px=w*.51+scale*(X*.94+(.56*Y-.83*z)*.31), py=h*.51+scale*(-X*.31+(.56*Y-.83*z)*.94);
-      ctx.fillStyle=a<24?'#ffe1aa':b<5?'#fc9bde':'#b095ff';ctx.globalAlpha=Math.max(.13,Math.min(1,.5+Z*.33));const r=1+Math.max(0,Z)*.7;ctx.fillRect(px,py,r,r);
-    }ctx.globalAlpha=1;
+
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const options = {signal};
+  const period = 34_000;
+  const fullTurn = 2 * Math.PI;
+  const dots = new Map([['#b095ff', []], ['#fc9bde', []], ['#ffe1aa', []]]);
+  for (let row = 0; row < 170; row++) {
+    const u = row * fullTurn / 170;
+    for (let column = 0; column < 27; column++) {
+      const v = column * fullTurn / 27;
+      const radius = 1.02 + .36 * Math.cos(v);
+      const color = row < 24 ? '#ffe1aa' : column < 5 ? '#fc9bde' : '#b095ff';
+      dots.get(color).push([radius * Math.cos(u), radius * Math.sin(u), .36 * Math.sin(v) + .53 * Math.sin(3 * u)]);
+    }
   }
-  return draw;
+
+  let yaw = .45;
+  let width = 0, height = 0;
+  let visible = false, playing = !motion.matches;
+  let pointer = null, frame = 0, lastPaint = null;
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    const scale = Math.min(width * .30, height * .36);
+    const cos = Math.cos(yaw), sin = Math.sin(yaw);
+    for (const [color, points] of dots) {
+      ctx.fillStyle = color;
+      for (const [x, y, z] of points) {
+        const across = x * cos - y * sin, away = x * sin + y * cos;
+        const vertical = .56 * away - .83 * z, depth = .80 * away + .60 * z;
+        const size = 1 + Math.max(0, depth) * .7;
+        const px = width * .51 + scale * (across * .94 + vertical * .31);
+        const py = height * .51 + scale * (-across * .31 + vertical * .94);
+        ctx.globalAlpha = Math.max(.13, Math.min(1, .5 + depth * .33));
+        ctx.fillRect(px, py, size, size);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function resize() {
+    width = canvas.clientWidth;
+    height = canvas.clientHeight;
+    const density = Math.min(devicePixelRatio, 2);
+    canvas.width = Math.round(width * density);
+    canvas.height = Math.round(height * density);
+    ctx.setTransform(density, 0, 0, density, 0, 0);
+    draw();
+  }
+  function tick(now) {
+    if (lastPaint === null) lastPaint = now;
+    const elapsed = now - lastPaint;
+    if (elapsed >= 1000 / 30 - 1) {
+      yaw = (yaw + Math.min(elapsed, 100) * fullTurn / period) % fullTurn;
+      lastPaint = now;
+      draw();
+    }
+    frame = requestAnimationFrame(tick);
+  }
+  function syncPlayback() {
+    cancelAnimationFrame(frame);
+    lastPaint = null;
+    if (!signal.aborted && playing && visible && !document.hidden && pointer === null) frame = requestAnimationFrame(tick);
+  }
+  function setPlaying(value) {
+    playing = value;
+    toggle.dataset.playing = String(value);
+    toggle.textContent = value ? 'Pause' : 'Play';
+    toggle.setAttribute('aria-label', value ? 'Pause rotation' : 'Play rotation');
+    syncPlayback();
+  }
+  toggle.addEventListener('click', () => setPlaying(!playing), options);
+  motion.addEventListener('change', () => setPlaying(!motion.matches), options);
+  document.addEventListener('visibilitychange', syncPlayback, options);
+  canvas.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || !event.isPrimary || pointer !== null) return;
+    pointer = {id:event.pointerId, x:event.clientX, yaw};
+    canvas.setPointerCapture(event.pointerId);
+    syncPlayback();
+  }, options);
+  canvas.addEventListener('pointermove', event => {
+    if (pointer?.id !== event.pointerId) return;
+    yaw = pointer.yaw + (event.clientX - pointer.x) * Math.PI * 1.6 / Math.max(width, 1);
+    draw();
+  }, options);
+  function release(event) {
+    if (pointer?.id !== event.pointerId) return;
+    pointer = null;
+    syncPlayback();
+  }
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    canvas.addEventListener(type, release, options);
+  }
+  canvas.addEventListener('keydown', event => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    yaw += event.key === 'ArrowRight' ? .15 : -.15;
+    draw();
+  }, options);
+
+  const size = new ResizeObserver(resize);
+  const view = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    syncPlayback();
+  });
+  size.observe(canvas);
+  view.observe(canvas);
+  signal.addEventListener('abort', () => {
+    cancelAnimationFrame(frame);
+    size.disconnect();
+    view.disconnect();
+  }, {once:true});
+  resize();
+  setPlaying(playing);
 }
