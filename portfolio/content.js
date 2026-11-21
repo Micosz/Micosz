@@ -1,5 +1,5 @@
 window.PORTFOLIO = {
-  "name": "Chanakarn",
+  "name": "Chanakarn Khongratchatapinyo",
   "title": "Welcome to my archives",
   "intro": "Computer science student at Thammasat University. A collection of software, experiments, and things I’m learning along the way.",
   "about": "I study applied computer science at Thammasat University. My projects range from tools for navigating buildings to experiments with language and scheduling.",

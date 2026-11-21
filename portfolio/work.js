@@ -1,6 +1,13 @@
 // The Work archive uses the same content as its individual project pages and editor.
 function projectSlug(project,index){return project.id || String(index);}
-function projectRoute(project,index){return '#projects/'+encodeURIComponent(projectSlug(project,index));}
+function projectPath(project, index) {
+  return '/work/' + encodeURIComponent(projectSlug(project, index)) + '/';
+}
+function projectRoute(project, index) {
+  const published = window.PORTFOLIO.projects;
+  const original = published.findIndex(item => project.id ? item.id === project.id : !item.id && item.name === project.name);
+  return original >= 0 ? projectPath(published[original], original) : '/#projects/' + encodeURIComponent(projectSlug(project, index));
+}
 // Each study opens inside its project, independently of the original deployment.
 const workStudies = new Map([
   ['taskflow', ['A week in TaskFlow', 'Plan a week', 'Move a sample task onto the calendar, then mark it complete.', 'https://github.com/Micosz/taskflow']],
@@ -22,14 +29,14 @@ function workStudyPanel(project) {
     <footer class="specimen-footer">${study[3] ? `<a href="${esc(study[3])}" target="_blank" rel="noopener noreferrer">Project source ↗</a>` : '<span>Private project · independent illustration</span>'}<button type="button" class="study-reset">↺ Reset preview</button></footer>
   </section>`;
 }
-function workStudyCard(project,index) {
+function workStudyCard(project,index,interactive) {
   const study = workStudies.get(project.id);
   const route = projectRoute(project,index);
   return `<li class="work-entry work-card" id="work-${esc(project.id)}">
     <div class="work-card-copy">${workMeta(project,index)}<h2 class="work-project-title"><a href="${route}">${esc(project.name)}</a></h2>
-      <p class="work-subtitle">${esc(project.description)}</p><a class="work-open-study" href="${route}">${esc(study[1])} <span aria-hidden="true">↗</span></a>
-      <div class="work-links">${workLinks(project)}<a href="${route}">Project notes ↗</a></div></div>
-    <a class="work-thumb" href="${route}" aria-label="${esc(study[1])} — ${esc(project.name)}"><img src="assets/work/previews/${esc(project.id)}.webp" loading="lazy" width="780" height="480" alt=""></a>
+      <p class="work-subtitle">${esc(project.description)}</p><a class="work-open-study" href="${route}">${interactive ? esc(study[1]) : 'Read project'} <span aria-hidden="true">↗</span></a>
+      <div class="work-links">${workLinks(project,interactive)}<a href="${route}">Project notes ↗</a></div></div>
+    <a class="work-thumb" href="${route}" aria-label="${esc(study[1])} — ${esc(project.name)}"><img src="/assets/work/previews/${esc(project.id)}.webp" loading="lazy" width="780" height="480" alt=""></a>
   </li>`;
 }
 function workGrass() {
@@ -62,7 +69,7 @@ function startWorkStudies(main) {
   });
   return () => lifetime.abort();
 }
-function workLinks(project){
+function workLinks(project, interactive=true){
   const links=Array.isArray(project.links)?project.links:[];
   const all=[...(project.link?[{label:project.repositoryVisibility==='private'?'Private repository':'Repository',url:project.link,repository:true}]:[]),...links];
   const seen=new Set();
@@ -72,54 +79,58 @@ function workLinks(project){
     seen.add(url);
     if(item.repository&&new URL(item.url).hostname==='github.com'){
       const privateRepo=project.repositoryVisibility==='private';
+      if (!interactive) {
+        return `<a href="${url}">${privateRepo ? 'Private GitHub repository' : 'GitHub repository'} ↗</a>`;
+      }
       const label=`Open ${project.name}${privateRepo?' private repository':''} on GitHub (new tab)`;
-      return `<a class="work-repo-pet" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}"><img src="assets/contact/github-work.svg" alt="" width="138" height="120">${privateRepo?'<span class="work-repo-access">Private repository</span>':''}</a>`;
+      return `<a class="work-repo-pet" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)}"><img src="/assets/contact/github-work.svg" alt="" width="138" height="120">${privateRepo?'<span class="work-repo-access">Private repository</span>':''}</a>`;
     }
     return `<a href="${url}" target="_blank" rel="noopener noreferrer">${esc(item.label||'Source')} <span aria-hidden="true">↗</span></a>`;
   }).join('');
 }
-function workMeta(project,index){
-  return `<div class="work-meta"><span>PROJECT ${String(index+1).padStart(2,'0')}</span><span>${esc(project.category)}</span>${project.context?`<span>${esc(project.context)}</span>`:''}</div>`;
+function workMeta(project,index,includeAuthor=false){
+  return `<div class="work-meta">${includeAuthor ? `<span>Project notes by ${esc(data.name)}</span>` : ''}<span>PROJECT ${String(index+1).padStart(2,'0')}</span><span>${esc(project.category)}</span>${project.context?`<span>${esc(project.context)}</span>`:''}</div>`;
 }
-function workBody(project,index,{detail=false}={}){
+function workBody(project,index,{detail=false, interactive=true}={}){
   const features=Array.isArray(project.features)?project.features:[];
   const stack=Array.isArray(project.stack)?project.stack:[];
   const heading=detail?'h1':'h2';
   const title=detail?esc(project.name):`<a href="${projectRoute(project,index)}">${esc(project.name)}</a>`;
-  const picture=detail?imageSrc(project.image):'';
+  const source = detail ? imageSrc(project.image) : '';
+  const picture = source && !/^(?:https?:|\/)/i.test(source) ? '/' + source : source;
   return `<div class="work-entry-body">
     <${heading} class="work-project-title">${title}</${heading}>
     <p class="work-subtitle">${esc(project.description)}</p>
-    ${detail && workStudies.has(project.id)?workStudyPanel(project):''}
+    ${detail && interactive && workStudies.has(project.id)?workStudyPanel(project):''}
     ${picture?`<img class="work-image" src="${picture}" alt="${esc(project.name)}" loading="lazy">`:''}
     <div class="work-copy">${[project.detail,detail?project.notes:''].filter(Boolean).join('\n\n').split(/\n\s*\n/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('')}${features.length?`<ul>${features.map(feature=>`<li>${esc(feature)}</li>`).join('')}</ul>`:''}</div>
     ${stack.length?`<p class="work-stack"><span>Built with</span> ${stack.map(esc).join(' · ')}</p>`:''}
     ${project.contribution?`<p class="work-contribution"><span>My part</span> ${esc(project.contribution)}</p>`:''}
     ${project.status?`<p class="work-status"><span>Project note</span> ${esc(project.status)}</p>`:''}
-    <div class="work-links">${workLinks(project)}${!detail?`<a class="work-permalink" href="${projectRoute(project,index)}">Project notes <span aria-hidden="true">↗</span></a>`:''}</div>
+    <div class="work-links">${workLinks(project,interactive)}${!detail?`<a class="work-permalink" href="${projectRoute(project,index)}">Project notes <span aria-hidden="true">↗</span></a>`:''}</div>
   </div>`;
 }
-function workArchive(projects){
+function workArchive(projects, interactive=true){
   const previews=projects.flatMap((project,index)=>workStudies.has(project.id)?[`<a href="${projectRoute(project,index)}">${esc(project.name)} <span aria-hidden="true">↗</span></a>`]:[]);
   return `<section class="work-page" aria-labelledby="work-heading">
     <div class="work-wrap">
       <div class="work-page-head work-gallery-head"><div class="work-head-copy">
-        <p class="work-eyebrow">WORK · ${projects.length} PROJECT${projects.length===1?'':'S'}</p>
+        <p class="work-eyebrow">${esc(data.name)} · WORK · ${projects.length} PROJECT${projects.length===1?'':'S'}</p>
         <h1 id="work-heading">${esc(data.workArchiveTitle||'Projects, coursework,\nand things I’ve built.').replace(/\n/g,' <br>')}</h1>
         <p class="work-page-intro">${esc(data.workArchiveIntro||'A closer look at my class projects, team work, and personal experiments — what they do and how they work.')}</p>
-        ${previews.length?`<details class="work-picker"><summary>Browse interactive previews <span>${previews.length}</span></summary><div>${previews.join('')}</div></details>`:''}
-      </div>${workGrass()}</div>
-      <ol class="work-entries">${projects.map((project,index)=>workStudies.has(project.id)?workStudyCard(project,index):`<li class="work-entry" id="work-${esc(projectSlug(project,index))}">${workMeta(project,index)}${workBody(project,index)}</li>`).join('')}</ol>
+        ${interactive && previews.length?`<details class="work-picker"><summary>Browse interactive previews <span>${previews.length}</span></summary><div>${previews.join('')}</div></details>`:''}
+      </div>${interactive ? workGrass() : '<figure class="work-grass"><img class="work-grass-poster" src="/assets/work/previews/wildgrass.webp" alt="Wildgrass sculpture"></figure>'}</div>
+      <ol class="work-entries">${projects.map((project,index)=>workStudies.has(project.id)?workStudyCard(project,index,interactive):`<li class="work-entry" id="work-${esc(projectSlug(project,index))}">${workMeta(project,index)}${workBody(project,index,{interactive})}</li>`).join('')}</ol>
       ${projects.length?'':'<p class="work-empty">Projects will appear here as I add them.</p>'}
-      <a class="work-back" href="#home">← Back to the archive</a>
+      <a class="work-back" href="/">← Back to the archive</a>
     </div>
   </section>`;
 }
-function workProject(project,index){
+function workProject(project,index,interactive=true){
   const next=data.projects[(index+1)%data.projects.length];
   return `<section class="work-page work-detail${workStudies.has(project.id)?' work-detail-study':''}" aria-label="${esc(project.name)}">
-    <div class="work-wrap"><a class="work-back" href="#projects">← All projects</a>
-      <article class="work-entry">${workMeta(project,index)}${workBody(project,index,{detail:true})}</article>
+    <div class="work-wrap"><a class="work-back" href="/work/">← All projects</a>
+      <article class="work-entry">${workMeta(project,index,true)}${workBody(project,index,{detail:true,interactive})}</article>
       ${data.projects.length>1?`<a class="work-next" href="${projectRoute(next,(index+1)%data.projects.length)}"><span>Next project</span><strong>${esc(next.name)}</strong><span aria-hidden="true">↗</span></a>`:''}
     </div>
   </section>`;

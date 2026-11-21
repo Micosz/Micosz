@@ -12,13 +12,13 @@ Import **Micosz/Micosz**, choose the **main** branch, and use:
 | --- | --- |
 | Root Directory | `portfolio` |
 | Framework Preset | Other |
-| Build Command | Empty / skipped |
-| Output Directory | `.` |
+| Build Command | `node scripts/build-work.mjs` |
+| Output Directory | `dist` |
 | Install Command | Empty / skipped |
 
 `vercel.json` sets the static build settings. Select the Root Directory in Vercel's import screen. No API keys, environment variables or server are required.
 
-The site uses hash routes such as `/#about` and `/#projects`; no SPA rewrite is needed. After deployment, use the actual Vercel URL when linking from the GitHub profile or CV.
+The build generates `/work/`, one HTML page per published project, and `/sitemap.xml` from `content.js`. Project notes are readable without JavaScript. Existing `/#projects` links open the new Work pages with JavaScript enabled. After deployment, use the actual Vercel URL when linking from the GitHub profile or CV.
 
 Official setup reference: https://vercel.com/docs/builds/configure-a-build
 
@@ -28,7 +28,8 @@ From the repository root:
 
 ```sh
 cd portfolio
-python3 -m http.server 8000
+node scripts/build-work.mjs
+python3 -m http.server 8000 --directory dist
 ```
 
 Open http://localhost:8000/. Use HTTP rather than opening `index.html` directly, so the local 3D modules can load.

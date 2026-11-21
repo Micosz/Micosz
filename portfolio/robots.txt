@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://micoszportfolio.vercel.app/sitemap.xml

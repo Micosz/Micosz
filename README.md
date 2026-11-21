@@ -1,12 +1,13 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/spark-night.gif">
-  <img src="./assets/spark-day.gif" alt="Hi, I’m Chanakarn, a computer science student at Thammasat University.">
+  <img src="./assets/spark-day.gif" alt="Hi, I’m Chanakarn Khongratchatapinyo, a computer science student at Thammasat University.">
 </picture>
 
 <p align="center">
   <a href="https://micoszportfolio.vercel.app/" title="Explore my personal archive">
     <img src="./assets/archive-companion.svg" width="440" alt="Explore my personal archive — projects, university life, and things I’m learning.">
-  </a>
+  </a><br>
+  <a href="https://micoszportfolio.vercel.app/work/">Project archive by Chanakarn Khongratchatapinyo</a>
 </p>
 
 <p align="right">

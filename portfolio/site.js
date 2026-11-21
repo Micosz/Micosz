@@ -1,11 +1,12 @@
 const sections={projects:'Work',about:'About me',achievements:'Achievements',events:'Events',contact:'Contact'};
+const sectionURL = key => key === 'projects' ? '/work/' : '/#' + key;
 const data=getContent(),main=document.querySelector('main'),menu=document.querySelector('.menu');
 document.querySelector('.skip').addEventListener('click', event => {
   event.preventDefault();
   main.focus();
 });
 let stop=()=>{};document.querySelector('#brand').textContent=data.name;document.querySelector('#foot').textContent=data.name+' ↗';
-document.querySelector('#nav').innerHTML=Object.entries(sections).map(([k,v])=>`<a href="#${k}">${v}</a>`).join('');
+document.querySelector('#nav').innerHTML=Object.entries(sections).map(([k,v])=>`<a href="${sectionURL(k)}">${v}</a>`).join('');
 menu.onclick=()=>menu.setAttribute('aria-expanded',String(menu.getAttribute('aria-expanded')==='false'));
 document.querySelector('#nav').addEventListener('click',event=>{if(event.target.closest('a'))menu.setAttribute('aria-expanded','false');});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.getAttribute('aria-expanded')==='true'){menu.setAttribute('aria-expanded','false');menu.focus();}});
@@ -51,14 +52,30 @@ function chapterBody(key){
  return rows(key);
 }
 function introSection(key,index,label,headline,description,cta){
- return `<section class="block chapter work-intro" data-chapter="${key}"><div class="cap">FILE / ${index} &nbsp; ${label}</div><a class="work-intro-link" href="#${key}"><h2>${esc(headline)}</h2><span class="work-intro-arrow" aria-hidden="true">↗</span></a><div class="work-intro-bottom"><p>${esc(description)}</p><a class="under" href="#${key}">${cta} ↗</a></div></section>`;
+ return `<section class="block chapter work-intro" data-chapter="${key}"><div class="cap">FILE / ${index} &nbsp; ${label}</div><a class="work-intro-link" href="${sectionURL(key)}"><h2>${esc(headline)}</h2><span class="work-intro-arrow" aria-hidden="true">↗</span></a><div class="work-intro-bottom"><p>${esc(description)}</p><a class="under" href="${sectionURL(key)}">${cta} ↗</a></div></section>`;
 }
-function home(){return `<section class="hero"><div class="hero-stage"><div class="status"><span><b>●</b> PERSONAL ARCHIVE</span><span>TH / <time></time></span></div><div class="hero-grid"><div class="hero-copy"><h1>${esc(data.title).replace(/\n/g,'<br>')}</h1><p>${esc(data.intro)}</p><a class="primary" href="#projects">Explore the work <span>↗</span></a></div><figure><canvas aria-label="Rotating lavender ribbon sculpture"></canvas><figcaption>FIG. 01 &nbsp; / &nbsp; ORBIT STUDY <span>SCROLL ↓ · DRAG ↔</span></figcaption></figure></div><div class="scene-meter" aria-hidden="true"><i></i></div></div></section><section class="paper"><div class="cap">ABOUT ME / 01</div><h2>${esc(data.headline)}</h2><p>${esc(data.about)}</p><a class="paper-link" href="#about">About me ↗</a></section>${introSection('projects','02','WORK',data.workHeadline,data.workIntro,'Explore projects')}<section class="block spark-showcase" aria-label="Spark, day and night">${sparkScene()}</section>${introSection('achievements','03','ACHIEVEMENTS',data.achievementsHeadline,data.achievementsIntro,'Explore achievements')}${introSection('events','04','EVENTS',data.eventsHeadline,data.eventsIntro,'Explore events')}<section class="block" data-chapter="contact"><div class="cap">GET IN TOUCH</div><h2>Contact</h2>${contact()}</section>`;}
+function home(){return `<section class="hero"><div class="hero-stage"><div class="status"><span><b>●</b> PERSONAL ARCHIVE</span><span>TH / <time></time></span></div><div class="hero-grid"><div class="hero-copy"><h1>${esc(data.title).replace(/\n/g,'<br>')}</h1><p>${esc(data.intro)}</p><a class="primary" href="/work/">Explore the work <span>↗</span></a></div><figure><canvas aria-label="Rotating lavender ribbon sculpture"></canvas><figcaption>FIG. 01 &nbsp; / &nbsp; ORBIT STUDY <span>SCROLL ↓ · DRAG ↔</span></figcaption></figure></div><div class="scene-meter" aria-hidden="true"><i></i></div></div></section><section class="paper"><div class="cap">ABOUT ME / 01</div><h2>${esc(data.headline)}</h2><p>${esc(data.about)}</p><a class="paper-link" href="#about">About me ↗</a></section>${introSection('projects','02','WORK',data.workHeadline,data.workIntro,'Explore projects')}<section class="block spark-showcase" aria-label="Spark, day and night">${sparkScene()}</section>${introSection('achievements','03','ACHIEVEMENTS',data.achievementsHeadline,data.achievementsIntro,'Explore achievements')}${introSection('events','04','EVENTS',data.eventsHeadline,data.eventsIntro,'Explore events')}<section class="block" data-chapter="contact"><div class="cap">GET IN TOUCH</div><h2>Contact</h2>${contact()}</section>`;}
 function render(){
  document.querySelector('#brand').textContent=data.name;document.querySelector('#foot').textContent=data.name+' ↗';
  stop();menu.setAttribute('aria-expanded','false');
- const [key='home',id]=location.hash.slice(1).split('/');const name=sections[key];
- const record=id && Array.isArray(data[key]) ? (/^\d+$/.test(id)?data[key][Number(id)]:data[key].find(item=>item.id===id)) : null;
+ const fragment = location.hash.slice(1).split('/');
+ const workSlug = document.body.dataset.workSlug;
+ const [key, id] = workSlug !== undefined ? ['projects', workSlug] : fragment;
+ const name=sections[key];
+ let record;
+ if (workSlug) {
+   const canonical = '/work/' + encodeURIComponent(workSlug) + '/';
+   record = data.projects.find((project, index) => projectRoute(project, index) === canonical);
+ } else if (id && Array.isArray(data[key])) {
+   record = /^\d+$/.test(id) ? data[key][Number(id)] : data[key].find(item => item.id === id);
+ }
+ if (key === 'projects' && workSlug === undefined) {
+   const destination = record ? projectRoute(record, data.projects.indexOf(record)) : '/work/';
+   if (destination.startsWith('/work/')) {
+     location.replace(destination + location.search);
+     return;
+   }
+ }
  document.body.dataset.page=key==='projects'?'work':key||'home';
  if(key==='edit'){showEditor(main,data);document.title='Edit portfolio';window.scrollTo(0,0);return;}
  if(!name){main.innerHTML=home();clock();}
@@ -81,7 +98,7 @@ function render(){
   main.innerHTML=`<section class="block interior" data-chapter="${esc(key)}"><a class="crumb" href="#${record?key:'home'}">← ${record?name:'Home'}</a>${body}</section>`;
  }
  document.title=(record?.name||name||'Personal archive')+' — '+data.name;
- document.querySelectorAll('#nav a').forEach(a=>a.toggleAttribute('aria-current',a.hash==='#'+key));
+ document.querySelectorAll('#nav a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')===sectionURL(key)));
  window.scrollTo(0,0);
  const stopMotion=startScrollMotion(main),stopAbout=startAbout(main),stopStudies=startWorkStudies(main);
  stop=()=>{stopStudies();stopAbout();stopMotion();};
@@ -103,4 +120,5 @@ function route(){
    transition=curtain.animate([{transform:'translateY(0)'},{transform:'translateY(-100%)'}],{duration:340,easing:'cubic-bezier(.55,0,.15,1)'});
  };
 }
+document.body.classList.add('interactive');
 window.addEventListener('hashchange',route);render();

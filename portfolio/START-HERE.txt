@@ -1,5 +1,5 @@
 Chanakarn — editable portfolio
-เปิดผ่าน HTTP เพื่อให้โมเดล 3D โหลดได้: รัน python3 -m http.server 8000 ในโฟลเดอร์นี้ แล้วเปิด http://localhost:8000 หรือเผยแพร่ไฟล์ทั้งโฟลเดอร์บน static hosting
+เปิดผ่าน HTTP เพื่อให้โมเดล 3D โหลดได้: รัน node scripts/build-work.mjs เพื่อสร้างหน้า Work จาก content.js แล้วรัน python3 -m http.server 8000 --directory dist ในโฟลเดอร์นี้ แล้วเปิด http://localhost:8000 หรือเผยแพร่ไฟล์ใน dist บน static hosting
 กด Edit portfolio ท้ายหน้า เลือกหมวด แก้ข้อมูลหรือเพิ่มรายการ แล้วกดบันทึกและดูหน้าเว็บ
 ร่างเก็บในเบราว์เซอร์เครื่องนี้ หากต้องการย้ายเครื่องหรือเผยแพร่ ให้ดาวน์โหลด content.js จากหน้าแก้ไข แล้วนำไปแทนไฟล์ content.js เดิม
 รูปใช้ URL สาธารณะ หรือสร้างโฟลเดอร์ assets ในโฟลเดอร์เว็บ ใส่รูปและกรอก assets/ชื่อรูป.jpg

@@ -3,6 +3,7 @@ const DRAFT = 'chanakarn-archive-draft-v1';
 function getContent() {
   try {const saved = JSON.parse(localStorage.getItem(DRAFT)); if(saved && typeof saved === 'object') {
     const data={...window.PORTFOLIO,...saved};
+    if (saved.name === "Chanakarn") data.name = window.PORTFOLIO.name;
     // Drafts saved before the first badges shipped contain the old, empty catalogue.
     if (saved.achievementsCatalogVersion == null && Array.isArray(saved.achievements)) {
       const newEntries = window.PORTFOLIO.achievements.filter(entry =>
